@@ -21,7 +21,7 @@ def extract_frames():
     os.makedirs(output_folder, exist_ok=True)
 
     # Cropping coordinates
-    x, y, width, height = 160, 0, 220, 640
+    x, y, width, height = 166, 12, 216, 618
 
     while True:
         ret, frame = cap.read()
