@@ -8,6 +8,7 @@ import numpy as np
 bbox = None
 cropping = False
 x_start, y_start, x_end, y_end = 0, 0, 0, 0
+output_image = "combined_image.jpg"
 
 def show_image_on_ui(img):
     """Displays the combined image in the UI using OpenCV in the same window."""
@@ -16,7 +17,7 @@ def show_image_on_ui(img):
 
 def delete_old_images():
     """Deletes old extracted frames before generating new ones."""
-    folder = "extracted_frames"
+    folder = "extracted_frames" 
     if os.path.exists(folder):
         for file in os.listdir(folder):
             os.remove(os.path.join(folder, file))
@@ -126,6 +127,16 @@ def combine_images_horizontally():
     print(f"Saved combined image as {output_image}")
     show_image_on_ui(combined_image)
 
+def download_image():
+    """Allows user to download the combined image."""
+    if os.path.exists(output_image):
+        save_path = os.path.join(os.getcwd(), "downloaded_image.jpg")
+        cv2.imwrite(save_path, cv2.imread(output_image))
+        messagebox.showinfo("Download Complete", f"Image saved as {save_path}")
+    else:
+        messagebox.showerror("Error", "No combined image available for download.")
+
+
 # GUI Setup
 root = tk.Tk()
 root.title("Video Processing Tool")
@@ -135,5 +146,6 @@ tk.Label(root, text="Frames to Skip:").pack()
 slider = tk.Scale(root, from_=0, to=100, orient="horizontal")
 slider.pack()
 ttk.Button(root, text="Start Processing", command=process_video).pack()
+ttk.Button(root, text="Download Image", command=download_image).pack(pady=10)
 
 root.mainloop()
