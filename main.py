@@ -9,6 +9,8 @@ bbox = None
 cropping = False
 x_start, y_start, x_end, y_end = 0, 0, 0, 0
 output_image = "combined_image.jpg"
+cap = None
+frame = None
 
 def show_image_on_ui(img):
     """Displays the combined image in the UI using OpenCV in the same window."""
@@ -34,8 +36,8 @@ def select_bbox(event, x, y, flags, param):
         x_end, y_end = x, y
         cropping = False
         bbox = (min(x_start, x_end), min(y_start, y_end), abs(x_end - x_start), abs(y_end - y_start))
+        bbox_label.config(text=f"Bounding Box: {bbox}")
         print(f"Selected Bounding Box: {bbox}")
-        messagebox.showinfo("Bounding Box Selected", f"Coordinates: {bbox}")
 
 def show_first_frame():
     """Displays the first frame of the video and lets the user select a bounding box."""
@@ -150,6 +152,11 @@ root = tk.Tk()
 root.title("Video Processing Tool")
 
 tk.Button(root, text="Select Bounding Box", command=show_first_frame).pack(pady=10)
+
+# Bounding Box Label
+bbox_label = tk.Label(root, text="Bounding Box: Not Selected", fg="blue")
+bbox_label.pack()
+
 tk.Label(root, text="Frames to Skip:").pack()
 slider = tk.Scale(root, from_=0, to=100, orient="horizontal")
 slider.pack()
