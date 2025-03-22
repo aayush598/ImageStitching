@@ -9,6 +9,11 @@ bbox = None
 cropping = False
 x_start, y_start, x_end, y_end = 0, 0, 0, 0
 
+def show_image_on_ui(img):
+    """Displays the combined image in the UI using OpenCV in the same window."""
+    cv2.imshow("Processing Tool", img)
+    cv2.waitKey(1)
+
 def select_bbox(event, x, y, flags, param):
     """Handles mouse events for selecting the bounding box."""
     global x_start, y_start, x_end, y_end, cropping, bbox
@@ -23,7 +28,6 @@ def select_bbox(event, x, y, flags, param):
         bbox = (min(x_start, x_end), min(y_start, y_end), abs(x_end - x_start), abs(y_end - y_start))
         print(f"Selected Bounding Box: {bbox}")
         messagebox.showinfo("Bounding Box Selected", f"Coordinates: {bbox}")
-        cv2.destroyAllWindows()
 
 def show_first_frame():
     """Displays the first frame of the video and lets the user select a bounding box."""
@@ -38,21 +42,18 @@ def show_first_frame():
         return
 
     frame = cv2.rotate(frame, cv2.ROTATE_90_COUNTERCLOCKWISE)
-
-    cv2.namedWindow("Select Bounding Box")
-    cv2.setMouseCallback("Select Bounding Box", select_bbox)
+    cv2.namedWindow("Processing Tool")
+    cv2.setMouseCallback("Processing Tool", select_bbox)
 
     while True:
         temp_frame = frame.copy()
         if bbox:
             x, y, w, h = bbox
             cv2.rectangle(temp_frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
-        cv2.imshow("Select Bounding Box", temp_frame)
+        show_image_on_ui(temp_frame)
         key = cv2.waitKey(1) & 0xFF
         if key == 27 or bbox:
             break
-
-    cv2.destroyAllWindows()
 
 def extract_frames():
     """Extracts and crops frames based on the selected bounding box."""
@@ -82,6 +83,7 @@ def extract_frames():
 
         frame = cv2.rotate(frame, cv2.ROTATE_90_COUNTERCLOCKWISE)
         cropped_frame = frame[y:y+height, x:x+width]
+        show_image_on_ui(cropped_frame)
 
         if frame_count % (skip_frames + 1) == 0:
             frame_filename = f"{output_folder}/frame_{frame_count:04d}.jpg"
@@ -94,7 +96,7 @@ def extract_frames():
     print("Frame extraction and cropping completed.")
 
 def combine_images_horizontally():
-    """Combines extracted frames into a single image."""
+    """Combines extracted frames into a single image and displays it in UI."""
     input_folder = "extracted_frames"
     output_image = "combined_image.jpg"
 
@@ -109,6 +111,7 @@ def combine_images_horizontally():
     combined_image = np.hstack(images)
     cv2.imwrite(output_image, combined_image)
     print(f"Saved combined image as {output_image}")
+    show_image_on_ui(combined_image)
 
 # GUI Setup
 root = tk.Tk()
