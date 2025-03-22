@@ -14,6 +14,13 @@ def show_image_on_ui(img):
     cv2.imshow("Processing Tool", img)
     cv2.waitKey(1)
 
+def delete_old_images():
+    """Deletes old extracted frames before generating new ones."""
+    folder = "extracted_frames"
+    if os.path.exists(folder):
+        for file in os.listdir(folder):
+            os.remove(os.path.join(folder, file))
+
 def select_bbox(event, x, y, flags, param):
     """Handles mouse events for selecting the bounding box."""
     global x_start, y_start, x_end, y_end, cropping, bbox
@@ -54,6 +61,12 @@ def show_first_frame():
         key = cv2.waitKey(1) & 0xFF
         if key == 27 or bbox:
             break
+
+def process_video():
+    """Runs the entire process: extracting frames, combining images, and displaying."""
+    delete_old_images()
+    extract_frames()
+    combine_images_horizontally()
 
 def extract_frames():
     """Extracts and crops frames based on the selected bounding box."""
@@ -121,7 +134,6 @@ tk.Button(root, text="Select Bounding Box", command=show_first_frame).pack(pady=
 tk.Label(root, text="Frames to Skip:").pack()
 slider = tk.Scale(root, from_=0, to=100, orient="horizontal")
 slider.pack()
-ttk.Button(root, text="Extract & Crop Frames", command=extract_frames).pack()
-ttk.Button(root, text="Combine Images Horizontally", command=combine_images_horizontally).pack()
+ttk.Button(root, text="Start Processing", command=process_video).pack()
 
 root.mainloop()
