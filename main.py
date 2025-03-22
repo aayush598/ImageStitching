@@ -1,6 +1,6 @@
 import cv2
 import tkinter as tk
-from tkinter import ttk, messagebox
+from tkinter import ttk, messagebox, filedialog
 import os
 import numpy as np
 
@@ -128,13 +128,21 @@ def combine_images_horizontally():
     show_image_on_ui(combined_image)
 
 def download_image():
-    """Allows user to download the combined image."""
-    if os.path.exists(output_image):
-        save_path = os.path.join(os.getcwd(), "downloaded_image.jpg")
-        cv2.imwrite(save_path, cv2.imread(output_image))
-        messagebox.showinfo("Download Complete", f"Image saved as {save_path}")
-    else:
+    """Opens a save dialog and allows the user to select a save location for the combined image."""
+    if not os.path.exists(output_image):
         messagebox.showerror("Error", "No combined image available for download.")
+        return
+
+    file_path = filedialog.asksaveasfilename(
+        initialfile=output_image,  # Default filename
+        defaultextension=".jpg",
+        filetypes=[("JPEG Files", "*.jpg"), ("PNG Files", "*.png"), ("All Files", "*.*")],
+        title="Save Image As"
+    )
+
+    if file_path:
+        cv2.imwrite(file_path, cv2.imread(output_image))
+        messagebox.showinfo("Download Complete", f"Image saved at {file_path}")
 
 
 # GUI Setup
@@ -146,6 +154,6 @@ tk.Label(root, text="Frames to Skip:").pack()
 slider = tk.Scale(root, from_=0, to=100, orient="horizontal")
 slider.pack()
 ttk.Button(root, text="Start Processing", command=process_video).pack()
-ttk.Button(root, text="Download Image", command=download_image).pack(pady=10)
+ttk.Button(root, text="Download Image", command=download_image).pack(pady=10)  # Updated Download Button
 
 root.mainloop()
