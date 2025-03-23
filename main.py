@@ -11,6 +11,18 @@ x_start, y_start, x_end, y_end = 0, 0, 0, 0
 output_image = "combined_image.jpg"
 cap = None
 frame = None
+video_path = None
+
+def select_video():
+    global video_path
+    video_path = filedialog.askopenfilename(
+        filetypes=[("Video Files", "*.mp4;*.avi;*.mov;*.mkv"), ("All Files", "*.*")],
+        title="Select Video File"
+    )
+    if video_path:
+        video_label.config(text=f"Selected Video: {os.path.basename(video_path)}")
+    else:
+        video_label.config(text="No Video Selected")
 
 def show_image_on_ui(img):
     """Displays the combined image in the UI using OpenCV in the same window."""
@@ -150,6 +162,10 @@ def download_image():
 # GUI Setup
 root = tk.Tk()
 root.title("Video Processing Tool")
+
+tk.Button(root, text="Select Video", command=select_video).pack(pady=10)
+video_label = tk.Label(root, text="No Video Selected", fg="blue")
+video_label.pack()
 
 tk.Button(root, text="Select Bounding Box", command=show_first_frame).pack(pady=10)
 
