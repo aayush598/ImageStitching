@@ -52,10 +52,14 @@ def select_bbox(event, x, y, flags, param):
         print(f"Selected Bounding Box: {bbox}")
 
 def show_first_frame():
-    """Displays the first frame of the video and lets the user select a bounding box."""
-    global bbox
-
-    cap = cv2.VideoCapture("video.mp4")
+    """Displays the first frame of the selected video and lets the user select a bounding box."""
+    global bbox, video_path
+    
+    if not video_path:
+        messagebox.showerror("Error", "No video selected. Please select a video first.")
+        return
+    
+    cap = cv2.VideoCapture(video_path)
     ret, frame = cap.read()
     cap.release()
 
@@ -85,12 +89,11 @@ def process_video():
 
 def extract_frames():
     """Extracts and crops frames based on the selected bounding box."""
-    global bbox
+    global bbox,video_path
     if bbox is None:
         messagebox.showerror("Error", "No bounding box selected")
         return
 
-    video_path = "video.mp4"
     cap = cv2.VideoCapture(video_path)
 
     if not cap.isOpened():
